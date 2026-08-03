@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -86,7 +85,7 @@ public enum Phase {
         // If Jenkins variable was used for URL, and it was unresolvable, log warning and return.
         if (expandedUrl.contains("$")) {
             logger.printf("Ignoring sending notification due to unresolved variable: %s%n", urlInputValue);
-        } else if (StringUtils.isBlank(expandedUrl)) {
+        } else if (expandedUrl.isBlank()) {
             logger.println("URL is not set, ignoring call to send notification.");
         } else {
             isValid = true;
