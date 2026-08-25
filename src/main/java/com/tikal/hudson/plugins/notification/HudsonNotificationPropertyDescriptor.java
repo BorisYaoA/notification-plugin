@@ -36,7 +36,6 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
@@ -149,7 +148,7 @@ public final class HudsonNotificationPropertyDescriptor extends JobPropertyDescr
 
     private FormValidation checkUrl(String urlOrId, UrlType urlType, Protocol protocol) {
         String actualUrl = urlOrId;
-        if (urlType == UrlType.SECRET && !StringUtils.isEmpty(actualUrl)) {
+        if (urlType == UrlType.SECRET && actualUrl != null && !actualUrl.isEmpty()) {
             actualUrl = Jenkins.get().getItems(ItemGroup.class).stream()
                     .map(ig -> Utils.getSecretUrl(urlOrId, ig))
                     .filter(Objects::nonNull)
@@ -166,7 +165,7 @@ public final class HudsonNotificationPropertyDescriptor extends JobPropertyDescr
             return FormValidation.ok();
         } catch (Exception e) {
             String message = e.getMessage();
-            if (urlType == UrlType.SECRET && !StringUtils.isEmpty(actualUrl)) {
+            if (urlType == UrlType.SECRET && actualUrl != null && !actualUrl.isEmpty()) {
                 message = message.replace(actualUrl, "******");
             }
             return FormValidation.error(message);
@@ -185,7 +184,7 @@ public final class HudsonNotificationPropertyDescriptor extends JobPropertyDescr
                 .includeEmptyValue()
                 .withAll(CredentialsProvider.lookupCredentials(
                         StringCredentials.class, owner, ACL.SYSTEM, Collections.emptyList()));
-        if (!StringUtils.isEmpty(secretUrl)) {
+        if (secretUrl != null && !secretUrl.isEmpty()) {
             // Select current value, add if missing
             for (ListBoxModel.Option option : model) {
                 if (option.value.equals(secretUrl)) {
